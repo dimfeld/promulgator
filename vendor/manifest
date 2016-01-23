@@ -1,0 +1,37 @@
+{
+	"version": 0,
+	"dependencies": [
+		{
+			"importpath": "github.com/Carevoyance/go-jira",
+			"repository": "https://github.com/Carevoyance/go-jira",
+			"revision": "38d3b84d1629c9b543876bb0a467a4df8428ace2",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/google/go-querystring/query",
+			"repository": "https://github.com/google/go-querystring",
+			"revision": "2a60fc2ba6c19de80291203597d752e9ba58e4c0",
+			"branch": "master",
+			"path": "/query"
+		},
+		{
+			"importpath": "github.com/nlopes/slack",
+			"repository": "https://github.com/nlopes/slack",
+			"revision": "fecd1dd0008dcb1a01e18b900b1abd4fd4e79177",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/tchap/oauth",
+			"repository": "https://github.com/tchap/oauth",
+			"revision": "d1214b4ac4b16fedaf83df0732fe80be9683bd96",
+			"branch": "master"
+		},
+		{
+			"importpath": "golang.org/x/net/websocket",
+			"repository": "https://go.googlesource.com/net",
+			"revision": "2e9cee70ee697e0a2ef894b560dda50dec7dff58",
+			"branch": "master",
+			"path": "/websocket"
+		}
+	]
+}
