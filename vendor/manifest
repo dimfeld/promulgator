@@ -15,15 +15,21 @@
 			"path": "/query"
 		},
 		{
-			"importpath": "github.com/nlopes/slack",
-			"repository": "https://github.com/nlopes/slack",
-			"revision": "fecd1dd0008dcb1a01e18b900b1abd4fd4e79177",
+			"importpath": "github.com/kelseyhightower/envconfig",
+			"repository": "https://github.com/kelseyhightower/envconfig",
+			"revision": "12c18e8343f6eb5fc3a9d5c8dc353e42e6bb40b9",
 			"branch": "master"
 		},
 		{
-			"importpath": "github.com/tchap/oauth",
-			"repository": "https://github.com/tchap/oauth",
-			"revision": "d1214b4ac4b16fedaf83df0732fe80be9683bd96",
+			"importpath": "github.com/mrjones/oauth",
+			"repository": "https://github.com/mrjones/oauth",
+			"revision": "fdd43ab9ffd4adbedbecf59a0ec6a7e0d3ef3970",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/nlopes/slack",
+			"repository": "https://github.com/nlopes/slack",
+			"revision": "fecd1dd0008dcb1a01e18b900b1abd4fd4e79177",
 			"branch": "master"
 		},
 		{

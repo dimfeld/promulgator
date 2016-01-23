@@ -1,6 +1,6 @@
 A bot that provides two-way integration between Slack and Jira.
 
-The components are relatiely orthogonal to each other to provide
+The components are relatively orthogonal to each other to provide
 ease of integration with other systems in the future.
 
 This project requires the `gb` dependency management tool to build.
