@@ -29,6 +29,7 @@ type JiraWebhook struct {
 	Issue     *jira.Issue    `json:"user"`
 	Changelog *JiraChangelog `json:"changelog"`
 	Comment   *jira.Comment  `json:"comment"`
+	JiraURL   string         `json:"-"`
 }
 
 type WebhookFormatter func(*JiraWebhook) (*model.ChatMessage, error)
@@ -55,6 +56,8 @@ func handleWebhook(config *model.Config, outChan chan *model.ChatMessage,
 	}
 
 	if handler, ok := handlers[data.Event]; ok {
+		// Set this since the formatters will probably want it for hyperlinks.
+		data.JiraURL = config.JiraUrl
 		message, err := handler(data)
 		if err != nil {
 			// TODO Log something
