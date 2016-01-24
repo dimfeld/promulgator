@@ -1,6 +1,7 @@
 package main
 
 import (
+	"commandrouter"
 	"fmt"
 	"github.com/kelseyhightower/envconfig"
 	"jiraclient"
@@ -27,14 +28,14 @@ func main() {
 	}
 
 	slackChatChan := make(chan *model.ChatMessage, 1)
-	trackerUpdateChan := make(chan *model.TrackerUpdate, 1)
 	closeChan := make(chan struct{})
 
 	wg := &sync.WaitGroup{}
 	wg.Add(3)
-	jiraclient.Start(config, wg, trackerUpdateChan, slackChatChan, closeChan)
+	router := commandrouter.New()
+	jiraclient.Start(config, wg, router, slackChatChan, closeChan)
 	jirawebhook.Start(config, wg, slackChatChan, closeChan)
-	slackclient.Start(config, wg, slackChatChan, trackerUpdateChan, closeChan)
+	slackclient.Start(config, wg, slackChatChan, router, closeChan)
 
 	wg.Wait()
 }

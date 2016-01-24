@@ -19,38 +19,19 @@ type Config struct {
 	SlackUrl string `default:""`
 }
 
-type User struct {
-	Id   string
-	Name string
-}
-
-type Comment struct {
-	User     User
-	Contents string
-}
-
-type Issue struct {
-	Id          string
-	Assignee    User
-	Description string
-	Status      string
-}
-
-type UpdateType int
-
-const (
-	UpdateTypeIssue UpdateType = iota
-	UpdateTypeComment
-)
-
-type TrackerUpdate struct {
-	UpdateType      UpdateType
-	UpdatedObjectId string
-	Edits           map[string]string
-}
-
+// ChatMessage contains information about an incoming or outgoing message.
 type ChatMessage struct {
-	User     string
+	// For incoming chat messages, the user who typed the message. This is
+	// ignored for outging messages since we can't pretend to be another user.
+	FromUser string
+	// The user to whom the message is addresesed, if any. For Slack, this is
+	// the @user at the beginning of the message.
+	ToUser string
+	// The name of a channel to send to.
+	Channel  string
 	Title    string
 	Contents string
+	// For incoming messages, true if the message is addressed to the bot.
+	// This can either be through a DM channel or by starting with @botuser.
+	ToBot bool
 }

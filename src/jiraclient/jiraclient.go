@@ -1,12 +1,13 @@
 package jiraclient
 
 import (
+	"commandrouter"
 	"model"
 	"sync"
 )
 
 func Start(config *model.Config, wg *sync.WaitGroup,
-	inChan chan *model.TrackerUpdate,
+	commandrouter *commandrouter.Router,
 	outChan chan *model.ChatMessage, done chan struct{}) {
 
 }
