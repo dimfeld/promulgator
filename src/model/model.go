@@ -17,6 +17,9 @@ type Config struct {
 
 	SlackKey string `required:"true"`
 	SlackUrl string `default:""`
+
+	WebHookBind string `default:":80"`
+	WebHookKey  string `required:"true"`
 }
 
 // ChatMessage contains information about an incoming or outgoing message.
