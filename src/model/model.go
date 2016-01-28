@@ -3,6 +3,10 @@
 
 package model
 
+import (
+	"github.com/nlopes/slack"
+)
+
 type Config struct {
 	Verbose bool
 
@@ -15,34 +19,14 @@ type Config struct {
 	JiraAccessToken  string `required:"true"`
 	JiraAccessSecret string `required:"true"`
 
-	SlackKey string `required:"true"`
-	SlackUrl string `default:""`
+	SlackKey            string `required:"true"`
+	SlackUrl            string `default:"https://slack.com/api/"`
+	SlackDefaultChannel string `required:"true"`
 
 	WebHookBind string `default:":80"`
 	WebHookKey  string `required:"true"`
 
 	TemplateDir string `default:"./templates"`
-}
-
-type AttachmentField struct {
-	Title string `json:"title"`
-	Value string `json:"value"`
-	Short bool   `json:"short,omitempty"`
-}
-
-type ChatAttachment struct {
-	Fallback   string            `json:"fallback,omitempty"`
-	Color      string            `json:"color,omitempty"`
-	Pretext    string            `json:"pretext,omitempty"`
-	AuthorName string            `json:"author_name,omitempty"`
-	AuthorLink string            `json:"author_link,omitempty"`
-	AuthorIcon string            `json:"author_icon,omitempty"`
-	Title      string            `json:"title,omitempty"`
-	TitleLink  string            `json:"title_link,omitempty"`
-	Text       string            `json:"text,omitempty"`
-	Fields     []AttachmentField `json:"fields,omitempty"`
-	ImageUrl   string            `json:"image_url,omitempty"`
-	ThumbUrl   string            `json:"thumb_url,omitempty"`
 }
 
 // ChatMessage contains information about an incoming or outgoing message.
@@ -60,5 +44,5 @@ type ChatMessage struct {
 	// This can either be through a DM channel or by starting with @botuser.
 	ToBot bool
 	// Attachment, if any
-	Attachment *ChatAttachment
+	Attachment *slack.Attachment
 }
