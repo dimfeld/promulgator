@@ -35,7 +35,6 @@ func main() {
 	closeChan := make(chan struct{})
 
 	wg := &sync.WaitGroup{}
-	wg.Add(3)
 
 	// Route incoming messages from Slack to the appropriate destination.
 	router := commandrouter.New()
