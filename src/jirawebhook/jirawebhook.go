@@ -48,8 +48,7 @@ func handleWebhook(config *model.Config, outChan chan *model.ChatMessage,
 
 	d := json.NewDecoder(r.Body)
 	var data *JiraWebhook
-	err := d.Decode(data)
-	if err != nil {
+	if err := d.Decode(data); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte("JSON decode error: " + err.Error()))
 		return
@@ -62,6 +61,7 @@ func handleWebhook(config *model.Config, outChan chan *model.ChatMessage,
 		if err != nil {
 			// TODO Log something
 			w.WriteHeader(http.StatusInternalServerError)
+			w.Write([]byte(err.Error()))
 			return
 		}
 
@@ -73,6 +73,8 @@ func handleWebhook(config *model.Config, outChan chan *model.ChatMessage,
 
 func Start(config *model.Config, wg *sync.WaitGroup,
 	outChan chan *model.ChatMessage, done chan struct{}) {
+
+	wg.Add(1)
 
 	handlers = map[string]WebhookFormatter{
 		"issue_updated":   IssueUpdatedFormatter,
