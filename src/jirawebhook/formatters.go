@@ -22,10 +22,13 @@ func IssueUpdatedFormatter(data *JiraWebhook) (*model.ChatMessage, error) {
 		return nil, nil
 	}
 
+	link := fmt.Sprintf("%s/browse/%s", data.JiraURL, data.Issue.Key)
+
 	attachment := slack.Attachment{
-		Title:     fmt.Sprintf("%s commented on %s", data.User.Name, data.Issue.Key),
-		TitleLink: data.Comment.Self,
-		Text:      data.Comment.Body,
+		Pretext: fmt.Sprintf("%s commented on %s <%s|%s>",
+			data.User.DisplayName, data.Issue.Fields.Type.Name, link, data.Issue.Key),
+		Text:       data.Comment.Body,
+		MarkdownIn: []string{"text"},
 	}
 
 	msg := &model.ChatMessage{

@@ -11,7 +11,7 @@ type Config struct {
 	Verbose bool
 
 	// Base URL for Jira
-	JiraUrl     string //`required:"true"`
+	JiraUrl     string `required:"true"`
 	JiraKey     string //`required:"true"`
 	JiraAppName string `default:"JiraSlack"`
 
@@ -20,6 +20,7 @@ type Config struct {
 	JiraAccessSecret string //`required:"true"`
 
 	SlackKey            string `required:"true"`
+	SlackUser           string `default: "jira"`
 	SlackDefaultChannel string `required:"true"`
 
 	WebHookBind string `default:":80"`
