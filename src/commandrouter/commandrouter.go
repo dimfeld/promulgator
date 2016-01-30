@@ -123,13 +123,13 @@ func (r *Router) AddDestination(name string, commands []Command) (chan Match, er
 // Route processes a ChatMessage and routes it to the correct destination, if any.
 func (r *Router) Route(msg *model.ChatMessage) (bool, error) {
 	found := false
-	firstSpace := strings.Index(msg.Contents, " ")
+	firstSpace := strings.Index(msg.Text, " ")
 	var firstWord string
 	if firstSpace == -1 {
 		// Just one word, but this might be ok
-		firstWord = msg.Contents
+		firstWord = msg.Text
 	} else {
-		firstWord = msg.Contents[:firstSpace]
+		firstWord = msg.Text[:firstSpace]
 	}
 	if cmdList, ok := r.commands[firstWord]; ok {
 		// There is a command for this word. Send it to all the destinations.
@@ -151,7 +151,7 @@ func (r *Router) Route(msg *model.ChatMessage) (bool, error) {
 			// messages addressed to us, and this message is not.
 			continue
 		}
-		reMatch := rc.regexp.FindStringSubmatch(msg.Contents)
+		reMatch := rc.regexp.FindStringSubmatch(msg.Text)
 		if reMatch != nil {
 			match := Match{
 				Tag:     rc.cmd.Tag,

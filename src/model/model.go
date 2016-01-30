@@ -11,22 +11,19 @@ type Config struct {
 	Verbose bool
 
 	// Base URL for Jira
-	JiraUrl     string `required:"true"`
-	JiraKey     string `required:"true"`
+	JiraUrl     string //`required:"true"`
+	JiraKey     string //`required:"true"`
 	JiraAppName string `default:"JiraSlack"`
 
 	// Jira OAuth access data
-	JiraAccessToken  string `required:"true"`
-	JiraAccessSecret string `required:"true"`
+	JiraAccessToken  string //`required:"true"`
+	JiraAccessSecret string //`required:"true"`
 
 	SlackKey            string `required:"true"`
-	SlackUrl            string `default:"https://slack.com/api/"`
 	SlackDefaultChannel string `required:"true"`
 
 	WebHookBind string `default:":80"`
 	WebHookKey  string `required:"true"`
-
-	TemplateDir string `default:"./templates"`
 }
 
 // ChatMessage contains information about an incoming or outgoing message.
@@ -43,6 +40,6 @@ type ChatMessage struct {
 	// For incoming messages, true if the message is addressed to the bot.
 	// This can either be through a DM channel or by starting with @botuser.
 	ToBot bool
-	// Attachment, if any
-	Attachment *slack.Attachment
+	// Attachments, if any
+	Attachments []slack.Attachment
 }

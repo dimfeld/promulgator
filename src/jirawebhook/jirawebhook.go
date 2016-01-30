@@ -2,6 +2,7 @@ package jirawebhook
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/Carevoyance/go-jira"
 	"model"
 	"net/http"
@@ -24,9 +25,9 @@ type JiraChangelog struct {
 
 type JiraWebhook struct {
 	Timestamp uint64         `json:"timestamp"`
-	Event     string         `json:"event"`
+	Event     string         `json:"webhookEvent"`
 	User      *jira.Assignee `json:"user"`
-	Issue     *jira.Issue    `json:"user"`
+	Issue     *jira.Issue    `json:"issue"`
 	Changelog *JiraChangelog `json:"changelog"`
 	Comment   *jira.Comment  `json:"comment"`
 	JiraURL   string         `json:"-"`
@@ -41,19 +42,24 @@ func handleWebhook(config *model.Config, outChan chan *model.ChatMessage,
 
 	query := r.URL.Query()
 	if query.Get("key") != config.WebHookKey {
+		fmt.Printf("Bad webhook key %s\n", query.Get("key"))
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte("Invalid API key"))
 		return
 	}
 
 	d := json.NewDecoder(r.Body)
-	var data *JiraWebhook
+	data := &JiraWebhook{}
 	if err := d.Decode(data); err != nil {
+		fmt.Println("JSON decode error: " + err.Error())
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte("JSON decode error: " + err.Error()))
 		return
 	}
 
+	// TODO Proper debug logging
+	// buf, _ := json.MarshalIndent(data, "|", "  ")
+	// fmt.Println(string(buf))
 	if handler, ok := handlers[data.Event]; ok {
 		// Set this since the formatters will probably want it for hyperlinks.
 		data.JiraURL = config.JiraUrl
@@ -65,9 +71,10 @@ func handleWebhook(config *model.Config, outChan chan *model.ChatMessage,
 			return
 		}
 
-		outChan <- message
+		if message != nil {
+			outChan <- message
+		}
 	}
-
 	w.WriteHeader(http.StatusOK)
 }
 
@@ -77,10 +84,9 @@ func Start(config *model.Config, wg *sync.WaitGroup,
 	wg.Add(1)
 
 	handlers = map[string]WebhookFormatter{
-		"issue_updated":   IssueUpdatedFormatter,
-		"issue_created":   IssueCreatedFormatter,
-		"issue_deleted":   IssueDeletedFormatter,
-		"comment_created": CommentFormatter,
+		"jira:issue_updated": IssueUpdatedFormatter,
+		// "jira:issue_created":   IssueCreatedFormatter,
+		// "jira:issue_deleted":   IssueDeletedFormatter,
 	}
 
 	go func() {
@@ -90,9 +96,10 @@ func Start(config *model.Config, wg *sync.WaitGroup,
 		})
 		// TODO Support TLS. Unimportant for now only because this runs solely
 		// within our own network.
+		fmt.Printf("Listening on %s\n", config.WebHookBind)
 		err := http.ListenAndServe(config.WebHookBind, nil)
 		if err != nil {
-			panic(err.Error) // TODO Fatal error, but not panic
+			panic(err.Error()) // TODO Fatal error, but not panic
 		}
 	}()
 }

@@ -2,9 +2,13 @@ package slackclient
 
 import (
 	"commandrouter"
+	"github.com/nlopes/slack"
+	"model"
+	"sync"
 )
 
-func StartIncoming(config *model.Config, commandrouter *commandrouter.Router,
+func StartIncoming(wg *sync.WaitGroup, config *model.Config, api *slack.Client,
+	commandrouter *commandrouter.Router,
 	done chan struct{}) {
 
 }
