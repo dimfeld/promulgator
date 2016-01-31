@@ -1,9 +1,11 @@
 package jirawebhook
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"github.com/Carevoyance/go-jira"
+	"io/ioutil"
 	"model"
 	"net/http"
 	"sync"
@@ -20,7 +22,7 @@ type JiraChangeItem struct {
 
 type JiraChangelog struct {
 	Items []JiraChangeItem `json:"items"`
-	Id    int              `json:"id"`
+	Id    string           `json:"id"`
 }
 
 type JiraWebhook struct {
@@ -48,10 +50,13 @@ func handleWebhook(config *model.Config, outChan chan *model.ChatMessage,
 		return
 	}
 
-	d := json.NewDecoder(r.Body)
+	buf, _ := ioutil.ReadAll(r.Body)
+
+	d := json.NewDecoder(bytes.NewReader(buf))
 	data := &JiraWebhook{}
 	if err := d.Decode(data); err != nil {
 		fmt.Println("JSON decode error: " + err.Error())
+		fmt.Println(string(buf))
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte("JSON decode error: " + err.Error()))
 		return
