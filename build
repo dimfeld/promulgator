@@ -1,0 +1,1 @@
+CGO_ENABLED=0 gb build -a -ldflags '-w' -tags netgo slack-jira
