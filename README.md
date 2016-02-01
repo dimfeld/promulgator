@@ -16,6 +16,7 @@ I'm working on this in my spare time, so can't make any promises on when these w
 
 * Documentation on how to use it. For now, see `src/model/model.go`. All config is through the environment.
 * Tests
+* Real logging instead of writing to stdout
 * Support HTTPS for webhooks
 * Handle events from Jira for issues created, resolved, etc.
 * Move to three-tier system where incoming actions are completely isolated from outgoing actions.
