@@ -2,8 +2,8 @@
 	"version": 0,
 	"dependencies": [
 		{
-			"importpath": "github.com/Carevoyance/go-jira",
-			"repository": "https://github.com/Carevoyance/go-jira",
+			"importpath": "github.com/andygrunwald/go-jira",
+			"repository": "https://github.com/andygrunwald/go-jira",
 			"revision": "38d3b84d1629c9b543876bb0a467a4df8428ace2",
 			"branch": "master"
 		},

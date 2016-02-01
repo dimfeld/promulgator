@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/Carevoyance/go-jira"
+	"github.com/andygrunwald/go-jira"
 	"io/ioutil"
 	"model"
 	"net/http"
