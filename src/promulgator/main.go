@@ -14,7 +14,7 @@ import (
 
 func ReadConfig() (c *model.Config, err error) {
 	c = new(model.Config)
-	err = envconfig.Process("sj", c)
+	err = envconfig.Process("PROMULGATOR", c)
 	return
 }
 
