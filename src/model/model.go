@@ -11,20 +11,20 @@ type Config struct {
 	Verbose bool
 
 	// Base URL for Jira
-	JiraUrl     string `required:"true"`
-	JiraKey     string //`required:"true"`
-	JiraAppName string `default:"JiraSlack"`
+	JiraUrl        string `envconfig:"JIRA_URL" required:"true"`
+	JiraApiKey     string `envconfig:"JIRA_API_KEY"` //`required:"true"`
+	JiraAppName    string `envconfig:"JIRA_APPNAME" default:"JiraSlack"`
+	JiraWebHookKey string `envconfig:"JIRA_WEBHOOK_KEY" required:"true"`
 
 	// Jira OAuth access data
-	JiraAccessToken  string //`required:"true"`
-	JiraAccessSecret string //`required:"true"`
+	JiraAccessToken  string `envconfig:"JIRA_ACCESS_TOKEN"`  //`required:"true"`
+	JiraAccessSecret string `envconfig:"JIRA_ACCESS_SECRET"` //`required:"true"`
 
-	SlackKey            string `required:"true"`
-	SlackUser           string `default: "jira"`
-	SlackDefaultChannel string `required:"true"`
+	SlackKey            string `envconfig:"SLACK_KEY" required:"true"`
+	SlackUser           string `envconfig:"SLACK_USER" default:"jira"`
+	SlackDefaultChannel string `envconfig:"SLACK_DEFAULT_CHANNEL" required:"true"`
 
-	WebHookBind string `default:":80"`
-	WebHookKey  string `required:"true"`
+	WebHookBind string `envconfig:"WEBHOOK_BIND" default:":80"`
 }
 
 // ChatMessage contains information about an incoming or outgoing message.

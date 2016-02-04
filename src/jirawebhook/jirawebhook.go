@@ -43,7 +43,7 @@ func handleWebhook(config *model.Config, outChan chan *model.ChatMessage,
 	w http.ResponseWriter, r *http.Request) {
 
 	query := r.URL.Query()
-	if query.Get("key") != config.WebHookKey {
+	if query.Get("key") != config.JiraWebHookKey {
 		fmt.Printf("Bad webhook key %s\n", query.Get("key"))
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte("Invalid API key"))
