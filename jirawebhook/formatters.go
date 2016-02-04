@@ -4,8 +4,8 @@ import (
 	"errors"
 	"fmt"
 	"github.com/nlopes/slack"
-	"model"
-	// "path/filepath"
+
+	"github.com/dimfeld/promulgator/model"
 )
 
 func IssueCreatedFormatter(data *JiraWebhook) (*model.ChatMessage, error) {

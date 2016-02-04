@@ -6,9 +6,10 @@ import (
 	"fmt"
 	"github.com/andygrunwald/go-jira"
 	"io/ioutil"
-	"model"
 	"net/http"
 	"sync"
+
+	"github.com/dimfeld/promulgator/model"
 )
 
 type JiraChangeItem struct {

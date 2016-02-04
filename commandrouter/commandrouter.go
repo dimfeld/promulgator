@@ -2,11 +2,14 @@ package commandrouter
 
 import (
 	"errors"
-	"model"
 	"regexp"
 	"strings"
+
+	"github.com/dimfeld/promulgator/model"
 )
 
+// Command defines a single command, how it should be detected, and what value
+// should be used to notify the client.
 type Command struct {
 	// Tag is the value sent to the destination when a command matches.
 	Tag int
@@ -24,23 +27,25 @@ type Command struct {
 // cmd is internal data needed to route a command match
 type cmd struct {
 	Tag         int
-	Destination Destination
+	destination destination
 	MatchAll    bool
 }
 
-type CommandList []cmd
+type commandList []cmd
 
 type regexpCommand struct {
 	regexp *regexp.Regexp
 	cmd    cmd
 }
 
-type Destination struct {
+type destination struct {
 	Channel chan Match
 }
 
-type DestinationList []Destination
+type destinationList []destination
 
+// Match contains all the information needed for a client to process an incoming
+// message.
 type Match struct {
 	// The tag supplied when the command was added.
 	Tag     int
@@ -50,29 +55,37 @@ type Match struct {
 	RegexpMatch []string
 }
 
+// Router is the command router itself.
 type Router struct {
-	destinations   []Destination
-	commands       map[string]CommandList
+	destinations   []destination
+	commands       map[string]commandList
 	regexpCommands []regexpCommand
 
 	done chan struct{}
 }
 
+// New creates a new Router
 func New() *Router {
 	return &Router{
-		destinations:   DestinationList{},
-		commands:       map[string]CommandList{},
+		destinations:   destinationList{},
+		commands:       map[string]commandList{},
 		regexpCommands: []regexpCommand{},
 		done:           make(chan struct{}),
 	}
 }
 
+// Close shuts down the router and closes all it outgoing channels.
 func (r *Router) Close() {
+	for _, d := range r.destinations {
+		close(d.Channel)
+	}
+
 	close(r.done)
+	r.done = nil
 }
 
-func (r *Router) addCommand(d Destination, c Command) error {
-	cmd := cmd{Tag: c.Tag, Destination: d, MatchAll: c.MatchAll}
+func (r *Router) addCommand(d destination, c Command) error {
+	cmd := cmd{Tag: c.Tag, destination: d, MatchAll: c.MatchAll}
 
 	if c.IsRegexp {
 		re, err := regexp.Compile(c.Command)
@@ -91,7 +104,7 @@ func (r *Router) addCommand(d Destination, c Command) error {
 
 		cmdList := r.commands[c.Command]
 		if cmdList == nil {
-			cmdList = CommandList{cmd}
+			cmdList = commandList{cmd}
 		} else {
 			cmdList = append(cmdList, cmd)
 		}
@@ -101,10 +114,11 @@ func (r *Router) addCommand(d Destination, c Command) error {
 	return nil
 }
 
+// AddDestination adds a new destination and associated commands to the router.
 func (r *Router) AddDestination(name string, commands []Command) (chan Match, error) {
 	ci := make(chan Match, 1)
 
-	dest := Destination{ci}
+	dest := destination{ci}
 	r.destinations = append(r.destinations, dest)
 
 	for _, c := range commands {
@@ -122,6 +136,10 @@ func (r *Router) AddDestination(name string, commands []Command) (chan Match, er
 
 // Route processes a ChatMessage and routes it to the correct destination, if any.
 func (r *Router) Route(msg *model.ChatMessage) (bool, error) {
+	if r.done == nil {
+		return false, errors.New("Router is closed")
+	}
+
 	found := false
 	firstSpace := strings.Index(msg.Text, " ")
 	var firstWord string
@@ -139,7 +157,7 @@ func (r *Router) Route(msg *model.ChatMessage) (bool, error) {
 					Tag:     c.Tag,
 					Message: msg,
 				}
-				c.Destination.Channel <- match
+				c.destination.Channel <- match
 				found = true
 			}
 		}
@@ -157,7 +175,7 @@ func (r *Router) Route(msg *model.ChatMessage) (bool, error) {
 				Tag:     rc.cmd.Tag,
 				Message: msg,
 			}
-			rc.cmd.Destination.Channel <- match
+			rc.cmd.destination.Channel <- match
 			found = true
 		}
 	}

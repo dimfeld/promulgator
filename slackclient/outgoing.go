@@ -3,8 +3,9 @@ package slackclient
 import (
 	"fmt"
 	"github.com/nlopes/slack"
-	"model"
 	"sync"
+
+	"github.com/dimfeld/promulgator/model"
 )
 
 func sendMessage(sendWg *sync.WaitGroup, config *model.Config, api *slack.Client,

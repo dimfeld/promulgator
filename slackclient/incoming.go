@@ -1,10 +1,11 @@
 package slackclient
 
 import (
-	"commandrouter"
 	"github.com/nlopes/slack"
-	"model"
 	"sync"
+
+	"github.com/dimfeld/promulgator/commandrouter"
+	"github.com/dimfeld/promulgator/model"
 )
 
 func StartIncoming(wg *sync.WaitGroup, config *model.Config, api *slack.Client,

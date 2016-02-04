@@ -1,18 +1,19 @@
 package main
 
 import (
-	"commandrouter"
 	"fmt"
 	"github.com/kelseyhightower/envconfig"
-	"jiraclient"
-	"jirawebhook"
-	"model"
 	"os"
-	"slackclient"
 	"sync"
+
+	"github.com/dimfeld/promulgator/commandrouter"
+	"github.com/dimfeld/promulgator/jiraclient"
+	"github.com/dimfeld/promulgator/jirawebhook"
+	"github.com/dimfeld/promulgator/model"
+	"github.com/dimfeld/promulgator/slackclient"
 )
 
-func ReadConfig() (c *model.Config, err error) {
+func readConfig() (c *model.Config, err error) {
 	c = new(model.Config)
 	err = envconfig.Process("PROMULGATOR", c)
 	return
@@ -22,7 +23,7 @@ func main() {
 	var config *model.Config
 	var err error
 
-	if config, err = ReadConfig(); err != nil {
+	if config, err = readConfig(); err != nil {
 		fmt.Printf("Error reading config: %s\n", err.Error())
 		os.Exit(1)
 	}

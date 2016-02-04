@@ -32,7 +32,7 @@ type ChatMessage struct {
 	// For incoming chat messages, the user who typed the message. This is
 	// ignored for outging messages since we can't pretend to be another user.
 	FromUser string
-	// The user to whom the message is addresesed, if any. For Slack, this is
+	// The user to whom the message is addressed, if any. For Slack, this is
 	// the @user at the beginning of the message.
 	ToUser string
 	// The name of a channel to send to.
