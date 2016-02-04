@@ -29,11 +29,10 @@ channel's name (with the `#` at the beginning) should be configured as `SLACK_DE
 
 ## Building
 
-This project requires the `gb` dependency management tool to build.
-If you do not have this tool, execute `go get -u github.com/constabulary/gb/...`
+This project uses the `glide` dependency management tool. Use `glide install` and then build normally, ensuring that `GO15VENDOREXPERIMENT=1` is in your environment if using Go 1.5.
 
-With the tool installed, you can pull down the dependencies using
-`gb vendor restore` and then build with `gb build`.
+For quick builds you don't have to do this, but the versions of dependencies may
+not be the same as those that I have built against.
 
 ## Upcoming Features
 
