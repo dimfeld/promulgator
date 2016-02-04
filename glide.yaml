@@ -1,4 +1,4 @@
-package: .
+package: github.com/dimfeld/promulgator
 import:
 - package: github.com/andygrunwald/go-jira
   version: 38d3b84d1629c9b543876bb0a467a4df8428ace2
