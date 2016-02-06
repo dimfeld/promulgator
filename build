@@ -1,2 +1,2 @@
 # Static build script
-CGO_ENABLED=0 go build -a -ldflags '-w' -tags netgo promulgator
+GO15VENDOREXPERIMENT=1 CGO_ENABLED=0 go build -a -ldflags '-w' -tags netgo .
