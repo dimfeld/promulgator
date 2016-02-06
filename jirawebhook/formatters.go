@@ -4,9 +4,12 @@ import (
 	"errors"
 	"fmt"
 	"github.com/nlopes/slack"
+	"strings"
 
 	"github.com/dimfeld/promulgator/model"
 )
+
+var replacer *strings.Replacer
 
 func IssueCreatedFormatter(data *JiraWebhook) (*model.ChatMessage, error) {
 	return nil, errors.New("Not implemented")
@@ -25,9 +28,11 @@ func IssueUpdatedFormatter(data *JiraWebhook) (*model.ChatMessage, error) {
 	link := fmt.Sprintf("%s/browse/%s", data.JiraURL, data.Issue.Key)
 
 	attachment := slack.Attachment{
+		Fallback: fmt.Sprintf("%s commented on %s: %s",
+			data.User.DisplayName, data.Issue.Key, data.Comment.Body),
 		Pretext: fmt.Sprintf("%s commented on %s <%s|%s>",
 			data.User.DisplayName, data.Issue.Fields.Type.Name, link, data.Issue.Key),
-		Text:       data.Comment.Body,
+		Text:       replacer.Replace(data.Comment.Body),
 		MarkdownIn: []string{"text"},
 	}
 

@@ -15,6 +15,7 @@ func sendMessage(sendWg *sync.WaitGroup, config *model.Config, api *slack.Client
 	params.Attachments = msg.Attachments
 	params.Username = config.SlackUser
 	params.AsUser = true
+	params.Parse = "none"
 
 	channel := msg.Channel
 	if channel == "" {

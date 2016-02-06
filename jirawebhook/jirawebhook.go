@@ -7,6 +7,7 @@ import (
 	"github.com/andygrunwald/go-jira"
 	"io/ioutil"
 	"net/http"
+	"strings"
 	"sync"
 
 	"github.com/dimfeld/promulgator/model"
@@ -89,6 +90,7 @@ func Start(config *model.Config, wg *sync.WaitGroup,
 
 	wg.Add(1)
 
+	replacer = strings.NewReplacer("&", "&amp;", "<", "&lt;", ">", "&gt;")
 	handlers = map[string]WebhookFormatter{
 		"jira:issue_updated": IssueUpdatedFormatter,
 		// "jira:issue_created":   IssueCreatedFormatter,
