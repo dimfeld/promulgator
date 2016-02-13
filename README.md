@@ -41,6 +41,7 @@ I'm working on this in my spare time, so can't make any promises on when these w
 * Real logging instead of writing to stdout
 * Support HTTPS for webhooks
 * Handle events from Jira for issues created, resolved, etc.
+* Attempted autocorrelation between Jira and Slack users
 * Move to three-tier system where incoming actions are completely isolated from outgoing actions.
 * Allow commenting on, resolving, closing, and assigning Jira issues from Slack. Need to decide on slash commands (`/jira blah blah`) vs. bot-type commands (`@jira blah blah`). I may support both options.
 * Handle webhooks from Git servers to resolve issues based on pushed commits.
