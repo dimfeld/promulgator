@@ -13,15 +13,16 @@ type Config struct {
 	// Base URL for Jira
 	JiraUrl        string `envconfig:"JIRA_URL" required:"true"`
 	JiraApiKey     string `envconfig:"JIRA_API_KEY"` //`required:"true"`
-	JiraAppName    string `envconfig:"JIRA_APPNAME" default:"JiraSlack"`
+	JiraAppName    string `envconfig:"JIRA_APPNAME" default:"Promulgator"`
 	JiraWebHookKey string `envconfig:"JIRA_WEBHOOK_KEY" required:"true"`
 
 	// Jira OAuth access data
 	JiraAccessToken  string `envconfig:"JIRA_ACCESS_TOKEN"`  //`required:"true"`
 	JiraAccessSecret string `envconfig:"JIRA_ACCESS_SECRET"` //`required:"true"`
 
+	// The token for the bot configuration.
 	SlackKey string `envconfig:"SLACK_KEY" required:"true"`
-	// The key for the Slack slash command. If empty, this gets the same value
+	// The token for the Slack slash command. If empty, this gets the same value
 	// as SlackKey, which is the desired behavior when using a full "app" as opposed
 	// to team-specific bots and slash commands.
 	SlackSlashCommandKey string `envconfig:"SLACK_SLASH_COMMAND_KEY"`
