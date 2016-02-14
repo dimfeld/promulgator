@@ -3,8 +3,9 @@ package jirawebhook
 import (
 	"errors"
 	"fmt"
-	"github.com/nlopes/slack"
 	"strings"
+
+	"github.com/nlopes/slack"
 
 	"github.com/dimfeld/promulgator/model"
 )
@@ -25,7 +26,7 @@ func IssueUpdatedFormatter(data *JiraWebhook) (*model.ChatMessage, error) {
 		return nil, nil
 	}
 
-	link := fmt.Sprintf("%s/browse/%s", data.JiraURL, data.Issue.Key)
+	link := fmt.Sprintf("%sbrowse/%s", data.JiraURL, data.Issue.Key)
 
 	attachment := slack.Attachment{
 		Fallback: fmt.Sprintf("%s commented on %s: %s",

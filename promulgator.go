@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"strings"
 	"sync"
 
 	"github.com/kelseyhightower/envconfig"
@@ -20,6 +21,10 @@ func readConfig() (c *model.Config, err error) {
 	err = envconfig.Process("PROMULGATOR", c)
 	if c.SlackSlashCommandKey == "" {
 		c.SlackSlashCommandKey = c.SlackKey
+	}
+
+	if !strings.HasSuffix(c.JiraUrl, "/") {
+		c.JiraUrl = c.JiraUrl + "/"
 	}
 	return
 }
