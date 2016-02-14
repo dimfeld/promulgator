@@ -25,8 +25,10 @@ type Config struct {
 	// as SlackKey, which is the desired behavior when using a full "app" as opposed
 	// to team-specific bots and slash commands.
 	SlackSlashCommandKey string `envconfig:"SLACK_SLASH_COMMAND_KEY"`
-	// The name the bot should post as. (TODO This might be unnecessary.)
+	// The name the bot should post as.
 	SlackUser string `envconfig:"SLACK_USER" default:"jira"`
+	// The Icon to use
+	SlackIcon string `envconfig:"SLACK_ICON" default:"https://slack.global.ssl.fastly.net/12d4/img/services/jira_48.png"`
 	// The channel to post messages to, when not invoked via chatbot DM.
 	SlackDefaultChannel string `envconfig:"SLACK_DEFAULT_CHANNEL" required:"true"`
 

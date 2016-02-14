@@ -2,8 +2,9 @@ package slackclient
 
 import (
 	"fmt"
-	"github.com/nlopes/slack"
 	"sync"
+
+	"github.com/nlopes/slack"
 
 	"github.com/dimfeld/promulgator/model"
 )
@@ -14,8 +15,9 @@ func sendMessage(sendWg *sync.WaitGroup, config *model.Config, api *slack.Client
 	params := slack.NewPostMessageParameters()
 	params.Attachments = msg.Attachments
 	params.Username = config.SlackUser
-	params.AsUser = true
-	params.Parse = "none"
+	params.IconURL = config.SlackIcon
+	params.LinkNames = 1
+	params.AsUser = false
 
 	channel := msg.Channel
 	if channel == "" {
