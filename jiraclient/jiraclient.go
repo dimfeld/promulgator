@@ -1,6 +1,7 @@
 package jiraclient
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	"strings"
@@ -22,16 +23,16 @@ const (
 )
 
 var commands []commandrouter.Command = []commandrouter.Command{
-	{Comment, "comment", false, false, "Add a comment to an issue -- comment <tag> <comment text>"},
-	{Comment, "c", false, false, "Add a comment to an issue -- c <tag> <comment text>"},
-	{Assign, "assign", false, false, "Assign an issue to a user -- assign <tag> <user>"},
-	{Assign, "a", false, false, "Assign an issue to a user -- a <tag> <user>"},
-	// {Resolve, "resolve", false, false, "Resolve an issue -- resolve <tag>"},
-	// {Resolve, "r", false, false, "Resolve an issue -- r <tag>"},
-	// {Close, "close", false, false, "Close an issue -- close <tag>"},
-	// {Close, "c", false, false, "Close an issue -- c <tag>"},
-	// {Reopen, "reopen", false, false, "Reopen an issue -- reopen <tag>"},
-	// {SetFixVersion, "fixversion", false, false, "Set an issue's fix version -- fixversion <tag> <version>"},
+	{Comment, "comment", false, false, "Add a comment to an issue -- comment <id> <comment text>"},
+	{Comment, "c", false, false, "Add a comment to an issue -- c <id> <comment text>"},
+	{Assign, "assign", false, false, "Assign an issue to a user -- assign <id> <user>"},
+	{Assign, "a", false, false, "Assign an issue to a user -- a <id> <user>"},
+	// {Resolve, "resolve", false, false, "Resolve an issue -- resolve <id>"},
+	// {Resolve, "r", false, false, "Resolve an issue -- r <id>"},
+	// {Close, "close", false, false, "Close an issue -- close <id>"},
+	// {Close, "c", false, false, "Close an issue -- c <id>"},
+	// {Reopen, "reopen", false, false, "Reopen an issue -- reopen <id>"},
+	// {SetFixVersion, "fixversion", false, false, "Set an issue's fix version -- fixversion <id> <version>"},
 }
 
 type parsedCommand struct {
@@ -40,7 +41,7 @@ type parsedCommand struct {
 	rest    string
 }
 
-func parseCommon(s string) parsedCommand {
+func parseCommon(s string) (parsedCommand, error) {
 	var issue string
 	var rest string
 
@@ -48,13 +49,16 @@ func parseCommon(s string) parsedCommand {
 
 	if len(words) > 1 {
 		issue = strings.ToUpper(words[1])
+		if strings.IndexAny(issue, "/#?&") != -1 {
+			return parsedCommand{}, errors.New("Invalid character in issue ID")
+		}
 	}
 
 	if len(words) > 2 {
 		rest = words[2]
 	}
 
-	return parsedCommand{words[0], issue, rest}
+	return parsedCommand{words[0], issue, rest}, nil
 }
 
 type JiraCommands struct {
@@ -140,9 +144,13 @@ func (jc *JiraCommands) Reopen(fromUser string, cmd parsedCommand) string {
 }
 
 func (jc *JiraCommands) Process(command int, message *model.ChatMessage) string {
-	parsed := parseCommon(message.Text)
+	parsed, err := parseCommon(message.Text)
+	if err != nil {
+		return err.Error()
+	}
+
 	if parsed.issue == "" {
-		return "Missing issue tag"
+		return "Missing issue id"
 	}
 
 	switch command {

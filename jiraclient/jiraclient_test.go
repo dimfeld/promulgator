@@ -15,9 +15,30 @@ func TestParseCommon(t *testing.T) {
 	}
 
 	for input, expected := range cases {
-		actual := parseCommon(input)
+		actual, err := parseCommon(input)
+		if err != nil {
+			t.Errorf("%s: saw unexpected error %s", input, err.Error())
+		}
 		if actual != expected {
 			t.Errorf("%s: saw %v, expected %v", input, actual, expected)
+		}
+	}
+}
+
+func TestParseCommonErrors(t *testing.T) {
+	cases := []string{
+		"apple /../application-properties cow dog",
+		"apple / cow",
+		"apple /",
+		"apple bee#cow",
+		"apple bee?page=1",
+		"apple bee&cow",
+	}
+
+	for _, input := range cases {
+		_, err := parseCommon(input)
+		if err == nil {
+			t.Errorf("%s: expected error but saw none", input)
 		}
 	}
 }
