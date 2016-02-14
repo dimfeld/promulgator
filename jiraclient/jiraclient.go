@@ -18,6 +18,7 @@ const (
 	Resolve
 	Close
 	Reopen
+	SetFixVersion
 )
 
 var commands []commandrouter.Command = []commandrouter.Command{
@@ -25,11 +26,12 @@ var commands []commandrouter.Command = []commandrouter.Command{
 	{Comment, "c", false, false, "Add a comment to an issue -- c <tag> <comment text>"},
 	{Assign, "assign", false, false, "Assign an issue to a user -- assign <tag> <user>"},
 	{Assign, "a", false, false, "Assign an issue to a user -- a <tag> <user>"},
-	{Resolve, "resolve", false, false, "Resolve an issue -- resolve <tag>"},
-	{Resolve, "r", false, false, "Resolve an issue -- r <tag>"},
-	{Close, "close", false, false, "Close an issue -- close <tag>"},
-	{Close, "c", false, false, "Close an issue -- c <tag>"},
-	{Reopen, "reopen", false, false, "Reopen an issue -- reopen <tag>"},
+	// {Resolve, "resolve", false, false, "Resolve an issue -- resolve <tag>"},
+	// {Resolve, "r", false, false, "Resolve an issue -- r <tag>"},
+	// {Close, "close", false, false, "Close an issue -- close <tag>"},
+	// {Close, "c", false, false, "Close an issue -- c <tag>"},
+	// {Reopen, "reopen", false, false, "Reopen an issue -- reopen <tag>"},
+	// {SetFixVersion, "fixversion", false, false, "Set an issue's fix version -- fixversion <tag> <version>"},
 }
 
 type parsedCommand struct {
@@ -45,7 +47,7 @@ func parseCommon(s string) parsedCommand {
 	words := strings.SplitN(s, " ", 3)
 
 	if len(words) > 1 {
-		issue = words[1]
+		issue = strings.ToUpper(words[1])
 	}
 
 	if len(words) > 2 {
@@ -60,6 +62,10 @@ type JiraCommands struct {
 }
 
 func (jc *JiraCommands) AddComment(fromUser string, cmd parsedCommand) string {
+	if cmd.rest == "" {
+		return "No comment text provided"
+	}
+
 	comment := jira.Comment{
 		Body: fmt.Sprintf("%s commented:\n%s", fromUser, cmd.rest),
 	}
@@ -72,23 +78,53 @@ func (jc *JiraCommands) AddComment(fromUser string, cmd parsedCommand) string {
 
 	resp, err := jc.Client.Do(req, nil)
 	if err != nil {
-		// TODO log here
-		return "Error contacting Jira server"
+		switch resp.StatusCode {
+		case http.StatusNotFound:
+			return "Issue not found"
+		default:
+			// TODO Log here
+			return "Jira server internal error, see logs"
+		}
 	}
 
-	switch resp.StatusCode {
-	case http.StatusCreated:
-		return "Success"
-	case http.StatusNotFound:
-		return "Issue not found"
-	default:
-		// TODO Log here
-		return "Jira server internal error, see logs"
-	}
+	return fmt.Sprintf("Added comment to issue %s", cmd.issue)
 }
 
 func (jc *JiraCommands) Assign(fromUser string, cmd parsedCommand) string {
-	return "Unimplemented!"
+	// TODO Look up our database of Jira/Slack users once it exists.
+	username := cmd.rest
+	if username == "" {
+		return "No assignee provided. Use `none` to remove the assignee"
+	} else if username == "none" {
+		username = ""
+	}
+
+	url := fmt.Sprintf("/rest/api/2/issue/%s/assignee", cmd.issue)
+	assignee := jira.Assignee{
+		Name: username,
+	}
+	req, err := jc.Client.NewRequest("PUT", url, &assignee)
+	if err != nil {
+		// TODO log here
+		return "Internal error, see logs"
+	}
+
+	resp, err := jc.Client.Do(req, nil)
+	if err != nil {
+		switch resp.StatusCode {
+		case http.StatusNotFound:
+			return "Issue or user not found"
+		default:
+			// TODO Log here
+			return "Jira server internal error, see logs"
+		}
+	}
+
+	if username == "" {
+		return fmt.Sprintf("Removed assignee from %s", cmd.issue)
+	} else {
+		return fmt.Sprintf("Assigned %s to %s", cmd.issue, username)
+	}
 }
 
 func (jc *JiraCommands) Resolve(fromUser string, cmd parsedCommand) string {
@@ -133,6 +169,7 @@ func Start(config *model.Config, wg *sync.WaitGroup,
 
 	wg.Add(1)
 
+	//httpClient := NewOAuthClient(${1:key}, ${2:accessToken}, ${3:accessSecret}, config.JiraUrl)
 	jiraClient, err := jira.NewClient(nil, config.JiraUrl)
 	if err != nil {
 		panic(err)
