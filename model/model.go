@@ -20,10 +20,17 @@ type Config struct {
 	JiraAccessToken  string `envconfig:"JIRA_ACCESS_TOKEN"`  //`required:"true"`
 	JiraAccessSecret string `envconfig:"JIRA_ACCESS_SECRET"` //`required:"true"`
 
-	SlackKey            string `envconfig:"SLACK_KEY" required:"true"`
-	SlackUser           string `envconfig:"SLACK_USER" default:"jira"`
+	SlackKey string `envconfig:"SLACK_KEY" required:"true"`
+	// The key for the Slack slash command. If empty, this gets the same value
+	// as SlackKey, which is the desired behavior when using a full "app" as opposed
+	// to team-specific bots and slash commands.
+	SlackSlashCommandKey string `envconfig:"SLACK_SLASH_COMMAND_KEY"`
+	// The name the bot should post as. (TODO This might be unnecessary.)
+	SlackUser string `envconfig:"SLACK_USER" default:"jira"`
+	// The channel to post messages to, when not invoked via chatbot DM.
 	SlackDefaultChannel string `envconfig:"SLACK_DEFAULT_CHANNEL" required:"true"`
 
+	// Listen on this IP/Port for webhooks.
 	WebHookBind string `envconfig:"WEBHOOK_BIND" default:":80"`
 }
 

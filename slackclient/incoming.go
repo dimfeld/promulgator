@@ -1,15 +1,33 @@
 package slackclient
 
 import (
-	"github.com/nlopes/slack"
-	"sync"
+	"fmt"
+
+	"golang.org/x/net/context"
 
 	"github.com/dimfeld/promulgator/commandrouter"
 	"github.com/dimfeld/promulgator/model"
 )
 
-func StartIncoming(wg *sync.WaitGroup, config *model.Config, api *slack.Client,
-	commandrouter *commandrouter.Router,
-	done chan struct{}) {
+func processIncomingSlack(ctx context.Context, commandrouter *commandrouter.Router,
+	command string, user string, inChannel string, toBot bool, responseChan chan string) {
 
+	msg := model.ChatMessage{
+		FromUser: user,
+		Channel:  inChannel,
+		Text:     command,
+		ToBot:    toBot,
+	}
+
+	handled, err := commandrouter.Route(ctx, &msg, responseChan)
+	if err != nil {
+		fmt.Println("commandrouter: ", err.Error())
+		// TODO Make this message configurable?
+		select {
+		case responseChan <- "Internal error, please see bot logs":
+		default:
+		}
+	} else if !handled {
+		responseChan <- "I didn't recognize that command"
+	}
 }

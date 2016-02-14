@@ -1,5 +1,5 @@
-hash: adcfafb06fa1838c2558ca0bdb42bd8a941d7bdd60caa02c51976dc211bb7d1d
-updated: 2016-02-04T10:44:54.852610863-06:00
+hash: 39e69eff8c350a2724e2fc5a07e6c795dda3dbce7d02d93d8b5915dc3f334890
+updated: 2016-02-13T13:13:39.524112691-06:00
 imports:
 - name: github.com/andygrunwald/go-jira
   version: 38d3b84d1629c9b543876bb0a467a4df8428ace2
@@ -26,6 +26,5 @@ imports:
   subpackages:
   - websocket
 - name: golang.org/x/text
-  version: cd1d59e467ef512633026c0f15282e108e41d453
-  repo: https://golang.org/x/text
+  version: 07b9a78963006a15c538ec5175243979025fa7a8
 devImports: []

@@ -5,6 +5,8 @@ import (
 	"regexp"
 	"strings"
 
+	"golang.org/x/net/context"
+
 	"github.com/dimfeld/promulgator/model"
 )
 
@@ -22,6 +24,7 @@ type Command struct {
 	// MatchAll is true if the command should match on all messages. If false,
 	// the command will match only on messages directed to the bot user.
 	MatchAll bool
+	Help     string
 }
 
 // cmd is internal data needed to route a command match
@@ -53,6 +56,7 @@ type Match struct {
 	// RegexpMatch contains the matching subgroups, if any, when a Regexp
 	// command matches.
 	RegexpMatch []string
+	Response    chan string
 }
 
 // Router is the command router itself.
@@ -115,6 +119,7 @@ func (r *Router) addCommand(d destination, c Command) error {
 }
 
 // AddDestination adds a new destination and associated commands to the router.
+// name is an arbitrary string used to identify the destination.
 func (r *Router) AddDestination(name string, commands []Command) (chan Match, error) {
 	ci := make(chan Match, 1)
 
@@ -135,7 +140,7 @@ func (r *Router) AddDestination(name string, commands []Command) (chan Match, er
 }
 
 // Route processes a ChatMessage and routes it to the correct destination, if any.
-func (r *Router) Route(msg *model.ChatMessage) (bool, error) {
+func (r *Router) Route(ctx context.Context, msg *model.ChatMessage, responseChan chan string) (bool, error) {
 	if r.done == nil {
 		return false, errors.New("Router is closed")
 	}
@@ -156,6 +161,14 @@ func (r *Router) Route(msg *model.ChatMessage) (bool, error) {
 				match := Match{
 					Tag:     c.Tag,
 					Message: msg,
+					// Send responseChan to all matches. This does mean that the
+					// match handler should send from inside a select to avoid
+					// blocking.
+					// TODO It also means that the first response to be sent
+					// is the only one processed, which isn't ideal. I should
+					// come up with a better system that amalgamates all the
+					// responses into one when there are multiple matches.
+					Response: responseChan,
 				}
 				c.destination.Channel <- match
 				found = true

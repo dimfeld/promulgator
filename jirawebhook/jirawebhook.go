@@ -4,11 +4,12 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/andygrunwald/go-jira"
 	"io/ioutil"
 	"net/http"
 	"strings"
 	"sync"
+
+	"github.com/andygrunwald/go-jira"
 
 	"github.com/dimfeld/promulgator/model"
 )
@@ -47,8 +48,8 @@ func handleWebhook(config *model.Config, outChan chan *model.ChatMessage,
 	query := r.URL.Query()
 	if query.Get("key") != config.JiraWebHookKey {
 		fmt.Printf("Bad webhook key %s\n", query.Get("key"))
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte("Invalid API key"))
+		w.WriteHeader(http.StatusForbidden)
+		w.Write([]byte("Jira WebHook: Invalid API key"))
 		return
 	}
 
@@ -88,8 +89,6 @@ func handleWebhook(config *model.Config, outChan chan *model.ChatMessage,
 func Start(config *model.Config, wg *sync.WaitGroup,
 	outChan chan *model.ChatMessage, done chan struct{}) {
 
-	wg.Add(1)
-
 	replacer = strings.NewReplacer("&", "&amp;", "<", "&lt;", ">", "&gt;")
 	handlers = map[string]WebhookFormatter{
 		"jira:issue_updated": IssueUpdatedFormatter,
@@ -97,17 +96,8 @@ func Start(config *model.Config, wg *sync.WaitGroup,
 		// "jira:issue_deleted":   IssueDeletedFormatter,
 	}
 
-	go func() {
-		// Create web server to listen for webhooks
-		http.HandleFunc("/jirahook", func(w http.ResponseWriter, r *http.Request) {
-			handleWebhook(config, outChan, w, r)
-		})
-		// TODO Support TLS. Unimportant for now only because this runs solely
-		// within our own network.
-		fmt.Printf("Listening on %s\n", config.WebHookBind)
-		err := http.ListenAndServe(config.WebHookBind, nil)
-		if err != nil {
-			panic(err.Error()) // TODO Fatal error, but not panic
-		}
-	}()
+	// Create web server to listen for webhooks
+	http.HandleFunc("/jirahook", func(w http.ResponseWriter, r *http.Request) {
+		handleWebhook(config, outChan, w, r)
+	})
 }
