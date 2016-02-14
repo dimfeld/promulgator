@@ -8,7 +8,7 @@ A bot that will provide two-way integration between Slack and Jira. Currently it
 
 ### Bot Configuration
 
-All configuration is done through environment variables.
+All configuration is done through environment variables. The Config object in `model/model.go` has the full set of documented options. These are the essentials:
 
 * `JIRA_URL` -- The URL of the associated Jira instance.
 * `JIRA_WEBHOOK_KEY` -- The key to use to verify incoming Jira webhooks.
@@ -36,12 +36,13 @@ not be the same as those that I have built against.
 
 ## Upcoming Features
 
-I'm working on this in my spare time, so can't make any promises on when these will be done.
+I'm working on this in my spare time, so can't make any promises on when these will be done. This list is in rough order of priority.
 
-* Real logging instead of writing to stdout
-* Support HTTPS for webhooks
-* Handle events from Jira for issues created, resolved, etc.
+* Allow commenting on, resolving, closing, and assigning Jira issues from Slack. Slash commands first, RTM with @jira support later.
+* Real logging instead of fmt.Printf
 * Attempted autocorrelation between Jira and Slack users
-* Move to three-tier system where incoming actions are completely isolated from outgoing actions.
-* Allow commenting on, resolving, closing, and assigning Jira issues from Slack. Need to decide on slash commands (`/jira blah blah`) vs. bot-type commands (`@jira blah blah`). I may support both options.
+* Handle events from Jira for issues created, resolved, etc.
+* Option to post an blurb with issue details whenever an issue is referenced.
 * Handle webhooks from Git servers to resolve issues based on pushed commits.
+* Support HTTPS for webhooks
+* Move to three-tier system for output where incoming actions are completely isolated from outgoing actions.
