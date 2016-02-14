@@ -1,8 +1,5 @@
 package: github.com/dimfeld/promulgator
 import:
-- package: github.com/andygrunwald/go-jira
-  version: 38d3b84d1629c9b543876bb0a467a4df8428ace2
-  repo: https://github.com/andygrunwald/go-jira
 - package: github.com/google/go-querystring
   version: 2a60fc2ba6c19de80291203597d752e9ba58e4c0
   repo: https://github.com/google/go-querystring
@@ -22,3 +19,4 @@ import:
   repo: https://go.googlesource.com/net
   subpackages:
   - websocket
+- package: github.com/dimfeld/go-jira

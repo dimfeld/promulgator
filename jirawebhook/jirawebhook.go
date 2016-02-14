@@ -9,8 +9,7 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/andygrunwald/go-jira"
-
+	"github.com/dimfeld/go-jira"
 	"github.com/dimfeld/promulgator/model"
 )
 

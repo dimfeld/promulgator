@@ -7,7 +7,7 @@ import (
 	"strings"
 	"sync"
 
-	jira "github.com/andygrunwald/go-jira"
+	jira "github.com/dimfeld/go-jira"
 
 	"github.com/dimfeld/promulgator/commandrouter"
 	"github.com/dimfeld/promulgator/model"
@@ -19,7 +19,7 @@ const (
 	Resolve
 	Close
 	Reopen
-	SetFixVersion
+	FixVersion
 )
 
 var commands []commandrouter.Command = []commandrouter.Command{
@@ -32,7 +32,7 @@ var commands []commandrouter.Command = []commandrouter.Command{
 	// {Close, "close", false, false, "Close an issue -- close <id>"},
 	// {Close, "c", false, false, "Close an issue -- c <id>"},
 	// {Reopen, "reopen", false, false, "Reopen an issue -- reopen <id>"},
-	// {SetFixVersion, "fixversion", false, false, "Set an issue's fix version -- fixversion <id> <version>"},
+	{FixVersion, "fixversion", false, false, "Set an issue's fix version -- fixversion <id> <version>"},
 }
 
 type parsedCommand struct {
@@ -59,6 +59,26 @@ func parseCommon(s string) (parsedCommand, error) {
 	}
 
 	return parsedCommand{words[0], issue, rest}, nil
+}
+
+func errorDetail(resp *http.Response, err error, key string) string {
+	if err != nil {
+		switch resp.StatusCode {
+		case http.StatusNotFound:
+			return "Issue not found"
+		case http.StatusBadRequest:
+			if errDetail, ok := err.(*jira.ErrorResponse); ok {
+				if e, ok := errDetail.Errors[key]; ok {
+					return e
+				}
+			}
+		default:
+			// TODO Log here
+			return "Jira server internal error, see logs"
+		}
+	}
+
+	return "Internal error, see logs"
 }
 
 type JiraCommands struct {
@@ -115,21 +135,7 @@ func (jc *JiraCommands) Assign(fromUser string, cmd parsedCommand) string {
 
 	resp, err := jc.Client.Do(req, nil)
 	if err != nil {
-		switch resp.StatusCode {
-		case http.StatusNotFound:
-			return "Issue not found"
-		case http.StatusBadRequest:
-			if errDetail, ok := err.(*jira.ErrorResponse); ok {
-				if e, ok := errDetail.Errors["assignee"]; ok {
-					return e
-				}
-			}
-
-			return "Issue or user not found"
-		default:
-			// TODO Log here
-			return "Jira server internal error, see logs"
-		}
+		return errorDetail(resp, err, "assignee")
 	}
 
 	if username == "" {
@@ -139,6 +145,10 @@ func (jc *JiraCommands) Assign(fromUser string, cmd parsedCommand) string {
 	}
 }
 
+// TODO Putting these off for now since we have to navigate the transition
+// system and this is also specific to both the Jira config and the issue type.
+// Likely, this will take some extra configuration to map short command names to
+// longer transition names, or something along those lines.
 func (jc *JiraCommands) Resolve(fromUser string, cmd parsedCommand) string {
 	return "Unimplemented!"
 }
@@ -149,6 +159,30 @@ func (jc *JiraCommands) Close(fromUser string, cmd parsedCommand) string {
 
 func (jc *JiraCommands) Reopen(fromUser string, cmd parsedCommand) string {
 	return "Unimplemented!"
+}
+
+func (jc *JiraCommands) SetFixVersion(fromUser string, cmd parsedCommand) string {
+	issue := jira.Issue{
+		Fields: &jira.IssueFields{
+			FixVersions: []*jira.FixVersion{
+				&jira.FixVersion{Name: cmd.rest},
+			},
+		},
+	}
+
+	url := fmt.Sprintf("/rest/api/2/issue/%s", cmd.issue)
+	req, err := jc.Client.NewRequest("PUT", url, &issue)
+	if err != nil {
+		// TODO log here
+		return "Internal error, see logs"
+	}
+
+	resp, err := jc.Client.Do(req, nil)
+	if err != nil {
+		return errorDetail(resp, err, "fixVersions")
+	}
+
+	return fmt.Sprintf("Set fix version of %s to %s", cmd.issue, cmd.rest)
 }
 
 func (jc *JiraCommands) Process(command int, message *model.ChatMessage) string {
@@ -172,6 +206,8 @@ func (jc *JiraCommands) Process(command int, message *model.ChatMessage) string 
 		return jc.Close(message.FromUser, parsed)
 	case Reopen:
 		return jc.Reopen(message.FromUser, parsed)
+	case FixVersion:
+		return jc.SetFixVersion(message.FromUser, parsed)
 	default:
 		// TODO Log about unexpected command tag
 		return "Internal error"

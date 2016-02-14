@@ -1,9 +1,8 @@
-hash: 39e69eff8c350a2724e2fc5a07e6c795dda3dbce7d02d93d8b5915dc3f334890
-updated: 2016-02-13T13:13:39.524112691-06:00
+hash: b91f58d47250f21b22c0b7ccac26ddccbf8cfdcf4d62168a459b75f33821fb68
+updated: 2016-02-13T21:16:06.596511586-06:00
 imports:
-- name: github.com/andygrunwald/go-jira
-  version: 38d3b84d1629c9b543876bb0a467a4df8428ace2
-  repo: https://github.com/andygrunwald/go-jira
+- name: github.com/dimfeld/go-jira
+  version: cc418daa758730391f04474ebd4ebc2c08e9e283
 - name: github.com/google/go-querystring
   version: 2a60fc2ba6c19de80291203597d752e9ba58e4c0
   repo: https://github.com/google/go-querystring
