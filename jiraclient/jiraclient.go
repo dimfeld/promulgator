@@ -117,6 +117,14 @@ func (jc *JiraCommands) Assign(fromUser string, cmd parsedCommand) string {
 	if err != nil {
 		switch resp.StatusCode {
 		case http.StatusNotFound:
+			return "Issue not found"
+		case http.StatusBadRequest:
+			if errDetail, ok := err.(*jira.ErrorResponse); ok {
+				if e, ok := errDetail.Errors["assignee"]; ok {
+					return e
+				}
+			}
+
 			return "Issue or user not found"
 		default:
 			// TODO Log here
