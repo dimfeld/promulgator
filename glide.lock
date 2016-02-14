@@ -1,5 +1,5 @@
-hash: b91f58d47250f21b22c0b7ccac26ddccbf8cfdcf4d62168a459b75f33821fb68
-updated: 2016-02-13T21:16:06.596511586-06:00
+hash: 7fea95c0055aed383faf5ee656cf23de29cb789ba59a06288997c53b76a1c6c0
+updated: 2016-02-13T21:25:14.519667279-06:00
 imports:
 - name: github.com/dimfeld/go-jira
   version: cc418daa758730391f04474ebd4ebc2c08e9e283
@@ -15,8 +15,7 @@ imports:
   version: fdd43ab9ffd4adbedbecf59a0ec6a7e0d3ef3970
   repo: https://github.com/mrjones/oauth
 - name: github.com/nlopes/slack
-  version: fecd1dd0008dcb1a01e18b900b1abd4fd4e79177
-  repo: https://github.com/nlopes/slack
+  version: a6a2e430fd2e1bc1f91c0fd538e5c2d0c898f5dc
 - name: golang.org/x/crypto
   version: 1f22c0103821b9390939b6776727195525381532
 - name: golang.org/x/net
