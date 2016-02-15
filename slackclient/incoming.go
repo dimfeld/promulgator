@@ -1,6 +1,8 @@
 package slackclient
 
 import (
+	"strings"
+
 	"golang.org/x/net/context"
 
 	"github.com/dimfeld/promulgator/commandrouter"
@@ -13,7 +15,7 @@ func processIncomingSlack(ctx context.Context, commandrouter *commandrouter.Rout
 	msg := model.ChatMessage{
 		FromUser: user,
 		Channel:  inChannel,
-		Text:     command,
+		Text:     strings.TrimSpace(command),
 		ToBot:    toBot,
 	}
 
