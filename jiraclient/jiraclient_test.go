@@ -6,15 +6,20 @@ import (
 
 func TestParseCommon(t *testing.T) {
 	cases := map[string]parsedCommand{
-		"a b c": {"a", "B", "c"},
-		"apple bee cow dog elephant fox": {"apple", "BEE", "cow dog elephant fox"},
-		"apple bee":                      {"apple", "BEE", ""},
-		"apple":                          {"apple", "", ""},
-		"apple bee cow\ndog\nelephant": {"apple", "BEE", "cow\ndog\nelephant"},
+		"a b c": {"a", "b", "c"},
+		"apple bee cow dog elephant fox":   {"apple", "bee", "cow dog elephant fox"},
+		"apple  bee cow dog elephant fox":  {"apple", "bee", "cow dog elephant fox"},
+		"apple BEE  cow dog elephant fox":  {"apple", "BEE", "cow dog elephant fox"},
+		"apple  bee  cow DOG elephant fox": {"apple", "bee", "cow DOG elephant fox"},
+		"apple bee":                        {"apple", "bee", ""},
+		"apple  bee":                       {"apple", "bee", ""},
+		"APPLE":                            {"APPLE", "", ""},
+		"apple bee        cow\ndog\nelephant": {"apple", "bee", "cow\ndog\nelephant"},
 		"": {"", "", ""},
 	}
 
 	for input, expected := range cases {
+		t.Logf("Testing %s", input)
 		actual, err := parseCommon(input)
 		if err != nil {
 			t.Errorf("%s: saw unexpected error %s", input, err.Error())

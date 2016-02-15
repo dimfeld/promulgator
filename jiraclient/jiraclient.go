@@ -42,24 +42,45 @@ type parsedCommand struct {
 	rest    string
 }
 
-func parseCommon(s string) (parsedCommand, error) {
+func parseCommon(input string) (parsedCommand, error) {
+	var command string
 	var issue string
 	var rest string
 
-	words := strings.SplitN(s, " ", 3)
+	nextWord := func(s string) (firstWordEnd int, secondWordBegin int) {
+		i := 0
+		// Skip past the current word
+		for i < len(s) && s[i] != ' ' {
+			i++
+		}
+		firstWordEnd = i
 
-	if len(words) > 1 {
-		issue = strings.ToUpper(words[1])
+		// Past all spaces, to the next word
+		for i < len(s) && s[i] == ' ' {
+			i++
+		}
+		secondWordBegin = i
+		return
+	}
+
+	firstEnd, secondBegin := nextWord(input)
+	command = input[:firstEnd]
+
+	if secondBegin < len(input) {
+		input = input[secondBegin:]
+		secondEnd, restBegin := nextWord(input)
+		issue = input[0:secondEnd]
+
+		if restBegin < len(input) {
+			rest = input[restBegin:]
+		}
+
 		if strings.IndexAny(issue, "/#?&") != -1 {
 			return parsedCommand{}, errors.New("Invalid character in issue ID")
 		}
 	}
 
-	if len(words) > 2 {
-		rest = words[2]
-	}
-
-	return parsedCommand{words[0], issue, rest}, nil
+	return parsedCommand{command, issue, rest}, nil
 }
 
 func errorDetail(resp *http.Response, err error, key string) string {
