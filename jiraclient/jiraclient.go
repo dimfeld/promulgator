@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"strings"
 	"sync"
+	"time"
 
 	jira "github.com/dimfeld/go-jira"
 
@@ -221,8 +222,13 @@ func Start(config *model.Config, wg *sync.WaitGroup,
 
 	wg.Add(1)
 
-	//httpClient := NewOAuthClient(${1:key}, ${2:accessToken}, ${3:accessSecret}, config.JiraUrl)
-	jiraClient, err := jira.NewClient(nil, config.JiraUrl)
+	httpClient, err := NewOAuthClient(config.JiraApiKey, config.JiraAccessToken, config.JiraAccessSecret, config.JiraUrl)
+	if err != nil {
+		panic(err)
+	}
+
+	httpClient.Timeout = time.Duration(config.RequestTimeout) * time.Millisecond
+	jiraClient, err := jira.NewClient(httpClient, config.JiraUrl)
 	if err != nil {
 		panic(err)
 	}
