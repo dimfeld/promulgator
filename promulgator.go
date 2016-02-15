@@ -60,12 +60,12 @@ func main() {
 	go func() {
 		// TODO Support TLS. Unimportant for now only because this runs solely
 		// within our own network, using nginx for TLS termination.
+		mainLogger.Noticef("Listening on %s", config.WebHookBind)
 		err := http.ListenAndServe(config.WebHookBind, nil)
 		if err != nil {
 			mainLogger.Crit(err.Error())
 			os.Exit(1)
 		}
-		mainLogger.Noticef("Listening on %s", config.WebHookBind)
 	}()
 
 	wg.Wait()
