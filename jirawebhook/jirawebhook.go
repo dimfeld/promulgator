@@ -3,13 +3,14 @@ package jirawebhook
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"strings"
 	"sync"
 
 	"github.com/dimfeld/go-jira"
+	"github.com/spacemonkeygo/spacelog"
+
 	"github.com/dimfeld/promulgator/model"
 )
 
@@ -40,13 +41,14 @@ type JiraWebhook struct {
 type WebhookFormatter func(*JiraWebhook) (*model.ChatMessage, error)
 
 var handlers map[string]WebhookFormatter
+var logger *spacelog.Logger
 
 func handleWebhook(config *model.Config, outChan chan *model.ChatMessage,
 	w http.ResponseWriter, r *http.Request) {
 
 	query := r.URL.Query()
 	if query.Get("key") != config.JiraWebHookKey {
-		fmt.Printf("Bad webhook key %s\n", query.Get("key"))
+		logger.Warnf("Bad webhook key %s\n", query.Get("key"))
 		w.WriteHeader(http.StatusForbidden)
 		w.Write([]byte("Jira WebHook: Invalid API key"))
 		return
@@ -57,16 +59,17 @@ func handleWebhook(config *model.Config, outChan chan *model.ChatMessage,
 	d := json.NewDecoder(bytes.NewReader(buf))
 	data := &JiraWebhook{}
 	if err := d.Decode(data); err != nil {
-		fmt.Println("JSON decode error: " + err.Error())
-		fmt.Println(string(buf))
+		logger.Errorf("JSON decode error: %s", err.Error())
+		logger.Error(string(buf))
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte("JSON decode error: " + err.Error()))
 		return
 	}
 
-	// TODO Proper debug logging
-	// buf, _ := json.MarshalIndent(data, "|", "  ")
-	// fmt.Println(string(buf))
+	if logger.DebugEnabled() {
+		buf, _ := json.MarshalIndent(data, "|", "  ")
+		logger.Debug(string(buf))
+	}
 	if handler, ok := handlers[data.Event]; ok {
 		// Set this since the formatters will probably want it for hyperlinks.
 		data.JiraURL = config.JiraUrl
@@ -87,6 +90,8 @@ func handleWebhook(config *model.Config, outChan chan *model.ChatMessage,
 
 func Start(config *model.Config, wg *sync.WaitGroup,
 	outChan chan *model.ChatMessage, done chan struct{}) {
+
+	logger = spacelog.GetLoggerNamed("jira-webhook")
 
 	replacer = strings.NewReplacer("&", "&amp;", "<", "&lt;", ">", "&gt;")
 	handlers = map[string]WebhookFormatter{

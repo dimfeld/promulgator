@@ -1,8 +1,6 @@
 package slackclient
 
 import (
-	"fmt"
-
 	"golang.org/x/net/context"
 
 	"github.com/dimfeld/promulgator/commandrouter"
@@ -21,7 +19,7 @@ func processIncomingSlack(ctx context.Context, commandrouter *commandrouter.Rout
 
 	handled, err := commandrouter.Route(ctx, &msg, responseChan)
 	if err != nil {
-		fmt.Println("commandrouter: ", err.Error())
+		logIn.Errorf("commandrouter: %s", err.Error())
 		// TODO Make this message configurable?
 		select {
 		case responseChan <- "Internal error, please see bot logs":

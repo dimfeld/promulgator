@@ -33,6 +33,9 @@ type Config struct {
 	// The channel to post messages to, when not invoked via chatbot DM.
 	SlackDefaultChannel string `envconfig:"SLACK_DEFAULT_CHANNEL" required:"true"`
 
+	// Timeout for HTTP requests, in milliseconds.
+	RequestTimeout int `envconfig:"REQUEST_TIMEOUT" default:"30000"`
+
 	// Listen on this IP/Port for webhooks.
 	WebHookBind string `envconfig:"WEBHOOK_BIND" default:":80"`
 }

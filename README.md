@@ -39,7 +39,6 @@ not be the same as those that I have built against.
 I'm working on this in my spare time, so can't make any promises on when these will be done. This list is in rough order of priority.
 
 * Allow commenting on, resolving, closing, and assigning Jira issues from Slack. Slash commands first, RTM with @jira support later.
-* Real logging instead of fmt.Printf
 * Attempted autocorrelation between Jira and Slack users
 * Handle events from Jira for issues created, resolved, etc.
 * Option to post an blurb with issue details whenever an issue is referenced.

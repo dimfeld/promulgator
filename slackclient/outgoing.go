@@ -1,7 +1,6 @@
 package slackclient
 
 import (
-	"fmt"
 	"sync"
 
 	"github.com/nlopes/slack"
@@ -27,10 +26,10 @@ func sendMessage(sendWg *sync.WaitGroup, config *model.Config, api *slack.Client
 		channel = config.SlackDefaultChannel
 	}
 
-	// fmt.Printf("Sending chat message...\n")
+	logOut.Debugf("Posting to channel %s %s %+v", channel, msg.Text, params)
 	_, _, err := api.PostMessage(channel, msg.Text, params)
 	if err != nil {
-		fmt.Printf("Error writing chat message: %s\n", err.Error())
+		logOut.Errorf("Error writing chat message: %s\n", err.Error())
 	}
 	sendWg.Done()
 }

@@ -3,8 +3,9 @@ package jiraclient
 import (
 	"crypto/rand"
 	"crypto/rsa"
-	"github.com/mrjones/oauth"
 	"net/http"
+
+	"github.com/mrjones/oauth"
 )
 
 // NewOAuthClient returns an HTTP client that is configured to use the
@@ -12,9 +13,9 @@ import (
 // a utility such as curlicue to perform the OAuth dance and get one.
 func NewOAuthClient(key, accessToken, accessSecret, URLBase string) (*http.Client, error) {
 	// These URLs are JIRA-specific
-	requestURL := URLBase + "/plugins/servlet/oauth/request-token"
-	authorizeURL := URLBase + "/plugins/servlet/oauth/authorize"
-	accessURL := URLBase + "/plugins/servlet/oauth/access-token"
+	requestURL := URLBase + "plugins/servlet/oauth/request-token"
+	authorizeURL := URLBase + "plugins/servlet/oauth/authorize"
+	accessURL := URLBase + "plugins/servlet/oauth/access-token"
 
 	sp := oauth.ServiceProvider{
 		RequestTokenUrl:   requestURL,

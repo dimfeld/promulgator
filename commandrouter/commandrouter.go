@@ -5,10 +5,17 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/spacemonkeygo/spacelog"
 	"golang.org/x/net/context"
 
 	"github.com/dimfeld/promulgator/model"
 )
+
+var logRouter *spacelog.Logger
+
+func init() {
+	logRouter = spacelog.GetLoggerNamed("commandrouter")
+}
 
 // Command defines a single command, how it should be detected, and what value
 // should be used to notify the client.
@@ -42,6 +49,7 @@ type regexpCommand struct {
 }
 
 type destination struct {
+	Name    string
 	Channel chan Match
 }
 
@@ -121,9 +129,10 @@ func (r *Router) addCommand(d destination, c Command) error {
 // AddDestination adds a new destination and associated commands to the router.
 // name is an arbitrary string used to identify the destination.
 func (r *Router) AddDestination(name string, commands []Command) (chan Match, error) {
+	logRouter.Debugf("Adding destination %s, commands %+v", name)
 	ci := make(chan Match, 1)
 
-	dest := destination{ci}
+	dest := destination{name, ci}
 	r.destinations = append(r.destinations, dest)
 
 	for _, c := range commands {
@@ -154,10 +163,13 @@ func (r *Router) Route(ctx context.Context, msg *model.ChatMessage, responseChan
 	} else {
 		firstWord = msg.Text[:firstSpace]
 	}
+
+	logRouter.Debugf("Routing command %s", firstWord)
 	if cmdList, ok := r.commands[firstWord]; ok {
 		// There is a command for this word. Send it to all the destinations.
 		for _, c := range cmdList {
 			if c.MatchAll || msg.ToBot {
+				logRouter.Debugf("Matched dest %s(%d)", c.destination.Name, c.Tag)
 				match := Match{
 					Tag:     c.Tag,
 					Message: msg,
@@ -168,6 +180,8 @@ func (r *Router) Route(ctx context.Context, msg *model.ChatMessage, responseChan
 					// is the only one processed, which isn't ideal. I should
 					// come up with a better system that amalgamates all the
 					// responses into one when there are multiple matches.
+					// This has its own issues though in that a single high-latency
+					// handler can make everything else look unresponsive.
 					Response: responseChan,
 				}
 				c.destination.Channel <- match
@@ -184,9 +198,12 @@ func (r *Router) Route(ctx context.Context, msg *model.ChatMessage, responseChan
 		}
 		reMatch := rc.regexp.FindStringSubmatch(msg.Text)
 		if reMatch != nil {
+			logRouter.Debugf("Matched dest %s(%d), regex %s",
+				rc.cmd.destination.Name, rc.cmd.Tag, rc.regexp.String())
 			match := Match{
-				Tag:     rc.cmd.Tag,
-				Message: msg,
+				Tag:      rc.cmd.Tag,
+				Message:  msg,
+				Response: responseChan,
 			}
 			rc.cmd.destination.Channel <- match
 			found = true

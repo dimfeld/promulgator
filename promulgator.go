@@ -1,13 +1,13 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
 	"os"
 	"strings"
 	"sync"
 
 	"github.com/kelseyhightower/envconfig"
+	"github.com/spacemonkeygo/spacelog"
 
 	"github.com/dimfeld/promulgator/commandrouter"
 	"github.com/dimfeld/promulgator/jiraclient"
@@ -33,8 +33,11 @@ func main() {
 	var config *model.Config
 	var err error
 
+	spacelog.MustSetup("promulgator", spacelog.SetupConfig{Output: "stderr", Stdlevel: "warn"})
+	mainLogger := spacelog.GetLoggerNamed("main")
+
 	if config, err = readConfig(); err != nil {
-		fmt.Printf("Error reading config: %s\n", err.Error())
+		mainLogger.Critf("Error reading config: %s\n", err.Error())
 		os.Exit(1)
 	}
 
@@ -57,11 +60,12 @@ func main() {
 	go func() {
 		// TODO Support TLS. Unimportant for now only because this runs solely
 		// within our own network, using nginx for TLS termination.
-		fmt.Printf("Listening on %s\n", config.WebHookBind)
 		err := http.ListenAndServe(config.WebHookBind, nil)
 		if err != nil {
-			panic(err.Error()) // TODO Fatal error, but not panic
+			mainLogger.Crit(err.Error())
+			os.Exit(1)
 		}
+		mainLogger.Noticef("Listening on %s", config.WebHookBind)
 	}()
 
 	wg.Wait()

@@ -1,7 +1,6 @@
 package slackclient
 
 import (
-	"fmt"
 	"net/http"
 	"time"
 
@@ -15,7 +14,7 @@ func StartIncomingWebhook(config *model.Config, commandrouter *commandrouter.Rou
 	http.HandleFunc("/slackhook", func(w http.ResponseWriter, r *http.Request) {
 		err := r.ParseForm()
 		if err != nil {
-			fmt.Println("Form decode error: " + err.Error())
+			logIn.Warnf("Form decode error: %s", err.Error())
 			w.WriteHeader(http.StatusBadRequest)
 			w.Write([]byte(err.Error()))
 			return
