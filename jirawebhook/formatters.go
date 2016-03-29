@@ -33,6 +33,8 @@ func IssueUpdatedFormatter(data *JiraWebhook) (*model.ChatMessage, error) {
 			data.User.DisplayName, data.Issue.Key, data.Comment.Body),
 		Pretext: fmt.Sprintf("%s commented on %s <%s|%s>",
 			data.User.DisplayName, data.Issue.Fields.Type.Name, link, data.Issue.Key),
+		Title:      data.Issue.Fields.Summary,
+		TitleLink:  link,
 		Text:       replacer.Replace(data.Comment.Body),
 		MarkdownIn: []string{"text"},
 	}
