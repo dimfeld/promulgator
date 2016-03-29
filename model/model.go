@@ -10,15 +10,15 @@ import (
 type Config struct {
 	Verbose bool
 
-	// Base URL for Jira
-	JiraUrl        string `envconfig:"JIRA_URL" required:"true"`
-	JiraApiKey     string `envconfig:"JIRA_API_KEY"` //`required:"true"`
-	JiraAppName    string `envconfig:"JIRA_APPNAME" default:"Promulgator"`
+	// Base URL for Jira. This should include basic auth information.
+	JiraUrl string `envconfig:"JIRA_URL" required:"true"`
+	// JiraApiKey string `envconfig:"JIRA_API_KEY"` //`required:"true"`
+	// JiraAppName    string `envconfig:"JIRA_APPNAME" default:"Promulgator"`
 	JiraWebHookKey string `envconfig:"JIRA_WEBHOOK_KEY" required:"true"`
 
 	// Jira OAuth access data
-	JiraAccessToken  string `envconfig:"JIRA_ACCESS_TOKEN"`  //`required:"true"`
-	JiraAccessSecret string `envconfig:"JIRA_ACCESS_SECRET"` //`required:"true"`
+	//JiraAccessToken  string `envconfig:"JIRA_ACCESS_TOKEN"`  //`required:"true"`
+	//JiraAccessSecret string `envconfig:"JIRA_ACCESS_SECRET"` //`required:"true"`
 
 	// The token for the bot configuration.
 	SlackKey string `envconfig:"SLACK_KEY" required:"true"`

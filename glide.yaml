@@ -1,21 +1,14 @@
 package: github.com/dimfeld/promulgator
 import:
-- package: github.com/google/go-querystring
-  version: 2a60fc2ba6c19de80291203597d752e9ba58e4c0
-  repo: https://github.com/google/go-querystring
-  subpackages:
-  - query
 - package: github.com/kelseyhightower/envconfig
   version: 12c18e8343f6eb5fc3a9d5c8dc353e42e6bb40b9
-  repo: https://github.com/kelseyhightower/envconfig
 - package: github.com/mrjones/oauth
   version: fdd43ab9ffd4adbedbecf59a0ec6a7e0d3ef3970
-  repo: https://github.com/mrjones/oauth
 - package: golang.org/x/net
   version: 2e9cee70ee697e0a2ef894b560dda50dec7dff58
   repo: https://go.googlesource.com/net
   subpackages:
   - websocket
-- package: github.com/dimfeld/go-jira
+- package: github.com/andygrunwald/go-jira
 - package: github.com/nlopes/slack
 - package: github.com/spacemonkeygo/spacelog

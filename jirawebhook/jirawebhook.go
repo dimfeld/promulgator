@@ -8,7 +8,7 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/dimfeld/go-jira"
+	"github.com/andygrunwald/go-jira"
 	"github.com/spacemonkeygo/spacelog"
 
 	"github.com/dimfeld/promulgator/model"

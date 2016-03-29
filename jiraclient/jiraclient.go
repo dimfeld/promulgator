@@ -8,7 +8,7 @@ import (
 	"sync"
 	"time"
 
-	jira "github.com/dimfeld/go-jira"
+	jira "github.com/andygrunwald/go-jira"
 
 	"github.com/dimfeld/promulgator/commandrouter"
 	"github.com/dimfeld/promulgator/model"
@@ -115,18 +115,11 @@ func (jc *JiraCommands) AddComment(fromUser string, cmd parsedCommand) string {
 	comment := jira.Comment{
 		Body: fmt.Sprintf("%s commented:\n%s", fromUser, cmd.rest),
 	}
-	url := fmt.Sprintf("/rest/api/2/issue/%s/comment", cmd.issue)
-	req, err := jc.Client.NewRequest("POST", url, &comment)
-	if err != nil {
-		// TODO log here
-		return "Internal error, see logs"
-	}
-
-	resp, err := jc.Client.Do(req, nil)
+	_, resp, err := jc.Client.Issue.AddComment(cmd.issue, &comment)
 	if err != nil {
 		switch resp.StatusCode {
 		case http.StatusNotFound:
-			return "Issue not found"
+			return fmt.Sprintf("Issue %s not found", cmd.issue)
 		default:
 			// TODO Log here
 			return "Jira server internal error, see logs"
@@ -243,13 +236,9 @@ func Start(config *model.Config, wg *sync.WaitGroup,
 
 	wg.Add(1)
 
-	httpClient, err := NewOAuthClient(config.JiraApiKey, config.JiraAccessToken, config.JiraAccessSecret, config.JiraUrl)
-	if err != nil {
-		panic(err)
-	}
-
+	httpClient := http.Client{}
 	httpClient.Timeout = time.Duration(config.RequestTimeout) * time.Millisecond
-	jiraClient, err := jira.NewClient(httpClient, config.JiraUrl)
+	jiraClient, err := jira.NewClient(nil, config.JiraUrl)
 	if err != nil {
 		panic(err)
 	}

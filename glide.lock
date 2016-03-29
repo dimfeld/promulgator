@@ -1,8 +1,8 @@
-hash: 5d15de265aba86979acba52bd5e1440bcd72adf6b4806dc2a53cadc825eaa0db
-updated: 2016-02-14T18:35:00.38431519-06:00
+hash: 6df79829b4bd742bfc817b6284aa7eac35f431bdf69cd789dbb451cf9f4ea44b
+updated: 2016-03-28T22:17:52.220068767-05:00
 imports:
-- name: github.com/dimfeld/go-jira
-  version: cc418daa758730391f04474ebd4ebc2c08e9e283
+- name: github.com/andygrunwald/go-jira
+  version: d41b1618b8cc81ead62f4277b7dfaf05fd3ab592
 - name: github.com/google/go-querystring
   version: 2a60fc2ba6c19de80291203597d752e9ba58e4c0
   repo: https://github.com/google/go-querystring
@@ -15,19 +15,13 @@ imports:
   version: fdd43ab9ffd4adbedbecf59a0ec6a7e0d3ef3970
   repo: https://github.com/mrjones/oauth
 - name: github.com/nlopes/slack
-  version: a6a2e430fd2e1bc1f91c0fd538e5c2d0c898f5dc
-- name: github.com/spacemonkeygo/flagfile
-  version: 871ce569c29360f95d7596f90aa54d5ecef75738
-  repo: https://github.com/spacemonkeygo/flagfile
+  version: 5e8064e706a2cb3d2581c1298d9428db2c0984fa
 - name: github.com/spacemonkeygo/spacelog
   version: ae95ccc1eb0c8ce2496c43177430efd61930f7e4
-- name: golang.org/x/crypto
-  version: 1f22c0103821b9390939b6776727195525381532
 - name: golang.org/x/net
   version: 2e9cee70ee697e0a2ef894b560dda50dec7dff58
   repo: https://go.googlesource.com/net
   subpackages:
   - websocket
-- name: golang.org/x/text
-  version: 07b9a78963006a15c538ec5175243979025fa7a8
+  - context
 devImports: []

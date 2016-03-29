@@ -8,9 +8,9 @@ A bot that will provide two-way integration between Slack and Jira. Currently it
 
 ### Bot Configuration
 
-All configuration is done through environment variables. The Config object in `model/model.go` has the full set of documented options. These are the essentials:
+All configuration is done through environment variables. The Config object in `model/model.go` has the full set of options, with documentation. These are the essentials:
 
-* `JIRA_URL` -- The URL of the associated Jira instance.
+* `JIRA_URL` -- The URL of the associated Jira instance, including username and password in HTTP Basic Auth format (i.e. `https://username:password@jiraserver`).
 * `JIRA_WEBHOOK_KEY` -- The key to use to verify incoming Jira webhooks.
 * `SLACK_KEY` -- The token provided by Slack's bot integration.
 * `SLACK_USER` -- Post updates as this user. This should generally match the name of the bot.
@@ -20,7 +20,7 @@ All configuration is done through environment variables. The Config object in `m
 
 ### Jira Configuration
 
-Set up a Jira webhook to `http://SERVER:PORT/jirahook?key=WEBHOOK_KEY`. The webhook should trigger on issue updates.
+Set up a Jira webhook to `http://SERVER:PORT/jirahook?key=JIRA_WEBHOOK_KEY`. The webhook should trigger on issue updates.
 
 ### Slack Configuration
 
@@ -38,9 +38,10 @@ not be the same as those that I have built against.
 
 I'm working on this in my spare time, so can't make any promises on when these will be done. This list is in rough order of priority.
 
-* Allow commenting on, resolving, closing, and assigning Jira issues from Slack. Slash commands first, RTM with @jira support later.
+* Allow commenting on and assigning Jira issues from Slack. Slash commands first, RTM with @jira support later.
+* Allow resolving and closing issues from Slack. Jira's workflow system makes this complex and potentially different for every installation.
 * Attempted autocorrelation between Jira and Slack users
-* Handle events from Jira for issues created, resolved, etc.
+* Handle events from Jira for issues created, resolved, etc. The Slack integration does this right now so it's not too important for me.
 * Option to post an blurb with issue details whenever an issue is referenced.
 * Handle webhooks from Git servers to resolve issues based on pushed commits.
 * Support HTTPS for webhooks
